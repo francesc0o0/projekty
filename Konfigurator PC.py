@@ -28,6 +28,7 @@ class KonfiguratorPC:
         kategorie = list(self.dane_czesci.keys())
 
         for i, nazwa_kat in enumerate(kategorie):
+            wybrano =  any(p['kategoria'] == nazwa_kat for p in self.koszyk.values())
             kolor_btn = "#FF9500" if nazwa_kat in self.koszyk else "#505050"
 
             przycisk = tkinter.Button(ramka_przyciski, text=nazwa_kat, width=22, height=2,
@@ -69,25 +70,25 @@ class KonfiguratorPC:
             tekst = f"{model['nazwa']} - {model['cena']} zł (W koszyku: {ilosc})"
             tkinter.Label(ramka_modelu, text=tekst).pack(side="left", padx=10)
 
-            tkinter.Button(ramka_modelu, text="+", width=3, command=lambda m=model: self.dodaj_do_koszyka(kategoria, m)).pack(side="right", padx=2)
+            tkinter.Button(ramka_modelu, text="+", width=3, command=lambda m=model: self.dodaj_do_koszyka(kategoria, m, grupa)).pack(side="right", padx=2)
 
-            tkinter.Button(ramka_modelu, text="-", width=3, command=lambda m=model: self.usun_jedna_sztuke(m['nazwa'], kategoria)).pack(side="right", padx=2)
+            tkinter.Button(ramka_modelu, text="-", width=3, command=lambda m=model: self.usun_jedna_sztuke(m['nazwa'], kategoria, grupa)).pack(side="right", padx=2)
 
         przycisk_powrot = tkinter.Button(self.okno, text="Cofnij", command=lambda k=kategoria : self.ekran_producentow(k))
         przycisk_powrot.pack(pady=20) 
 
-    def dodaj_do_koszyka(self, kategoria, dane_produktu):
+    def dodaj_do_koszyka(self, kategoria, dane_produktu, grupa):
         nazwa = dane_produktu['nazwa']
         if nazwa in self.koszyk:
             self.koszyk[nazwa]['ilosc'] += 1
         else:
-            self.koszyk['nazwa'] = {
+            self.koszyk[nazwa] = {
                 'kategoria': kategoria,
                 'cena': dane_produktu['cena'],
                 'ilosc': 1
             }    
 
-        self.ekran_modeli(kategoria, self.aktualna_grupa) 
+        self.ekran_modeli(kategoria, grupa) 
 
     def usun_jedna_sztuke(self, nazwa_produktu, kategoria, grupa):
         if nazwa_produktu in self.koszyk:
@@ -96,28 +97,32 @@ class KonfiguratorPC:
                 del self.koszyk[nazwa_produktu]
         self.ekran_modeli(kategoria, grupa)               
 
-    def usun_z_koszyka(self, kategoria):
-        if kategoria in self.koszyk:
-            del self.koszyk[kategoria]
+    def usun_z_koszyka_calkowicie(self, nazwa_produktu):
+        if nazwa_produktu in self.koszyk:
+            del self.koszyk[nazwa_produktu]
         self.ekran_podsumowania()        
 
     def ekran_podsumowania(self):
         self.wyczysc_okno()
         tkinter.Label(self.okno, text="Twoja Konfiguracja", font=("Arial", 18, "bold")).pack(pady=20)
 
-        suma = 0 
-        for kat, produkt in self.koszyk.items():
+        suma_calkowita = 0 
+        for nazwa, dane in self.koszyk.items():
+            ilosc = dane['ilosc']
+            cena_laczna = dane['cena'] * ilosc
+            suma_calkowita +=  cena_laczna
+
             ramka_wpisu = tkinter.Frame(self.okno)
             ramka_wpisu.pack(fill="x", padx=40, pady=2)
             
-            tekst = f"{kat}: {produkt['nazwa']} ({produkt['cena']} zł)"
+            tekst = f"{dane['kategoria']}: {nazwa} x{ilosc} - {cena_laczna} zł"
             tkinter.Label(ramka_wpisu, text=tekst, font=("Arial", 10)).pack(side="left")
 
-            tkinter.Button(ramka_wpisu, text="X", fg="white", bg="red", command=lambda k=kat: self.usun_z_koszyka(k)).pack(side="right")
+            tkinter.Button(ramka_wpisu, text="X", fg="white", bg="red", command=lambda n=nazwa: self.usun_z_koszyka_calkowicie(n)).pack(side="right")
             
-            suma += produkt['cena']
+            
 
-        tkinter.Label(self.okno, text=f"SUMA: {suma} zł", font=("Arial", 18, "bold")).pack(pady=20)
+        tkinter.Label(self.okno, text=f"SUMA: {suma_calkowita} zł", font=("Arial", 18, "bold")).pack(pady=20)
         tkinter.Button(self.okno, text="Wróć do menu", command=self.ekran_glowny).pack(pady=10)
 
 #----------LISTA CZĘŚCI------------
