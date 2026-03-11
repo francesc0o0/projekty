@@ -12,7 +12,7 @@ class KonfiguratorPC:
         self.dane_czesci = dane
         self.koszyk = {}
 
-        self.okno.title("PC rder")
+        self.okno.title("PC Order")
         self.okno.geometry("500x600")
         customtkinter.set_appearance_mode("dark")
         customtkinter.set_default_color_theme("blue")
@@ -125,7 +125,7 @@ class KonfiguratorPC:
             tekst = f"{dane['kategoria']}: {nazwa} x{ilosc} - {cena_laczna} zł"
             customtkinter.CTkLabel(ramka_wpisu, text=tekst, font=("Arial", 10)).pack(side="left")
 
-            customtkinter.CTkButton(ramka_wpisu, text="X", fg="white", bg="red", command=lambda n=nazwa: self.usun_z_koszyka_calkowicie(n)).pack(side="right")
+            customtkinter.CTkButton(ramka_wpisu, text="X", text_color="white", fg_color="red", command=lambda n=nazwa: self.usun_z_koszyka_calkowicie(n)).pack(side="right")
             
             
 
