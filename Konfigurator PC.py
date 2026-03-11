@@ -5,6 +5,7 @@ import os
 import subprocess
 import platform
 import customtkinter
+from datetime import datetime
 
 class KonfiguratorPC:
     def __init__(self, okno, dane):
@@ -137,30 +138,59 @@ class KonfiguratorPC:
         try:
             nazwa_pliku = "Podsumowanie.pdf"
             c = canvas.Canvas(nazwa_pliku)
-
-            c.setFont("Helvetica-Bold", 16)
-            c.drawString(100, 800, "Konfiguracja PC")
-            c.line(100, 795, 500, 795)
-
-            c.setFont("Helvetica", 12)
-            y = 760
             suma_calkowita = 0
 
-            for nazwa, dane in self.koszyk.items():
-                ilosc = dane['ilosc']
-                cena_laczna = dane['cena'] * ilosc
-                suma_calkowita += cena_laczna
+            c.setFillColorRGB(0.1, 0.1, 0.3)
+            c.rect(0, 750, 600, 100, fill=1)
 
-                linia = f"- {dane['kategoria']}: {nazwa} x{ilosc} ({cena_laczna} zł)"
-                c.drawString(100, y, linia)
-                y -= 20
+            c.setFillColorRGB(1, 1, 1)
+            c.setFont("Helvetica-Bold", 24)
+            c.drawString(50, 790, "OFERTA KONFIGURACJI PC")
 
-            c.line(100, y, 500, y)
+            c.setFont("Helvetica", 10)
+            data_teraz = datetime.now().strftime("%d.%m.%Y %H:%M")
+            c.drawRightString(550, 765, f"Data wystawienia: {data_teraz}")
+
+            y = 700
+            c.setFillColorRGB(0, 0, 0)
+            c.setFont("Helvetica-Bold", 12)
+            c.drawString(50, y, "Kategoria")
+            c.drawString(180, y, "Wybrany model")
+            c.drawRightString(550, y, "Cena")
+
+            c.setLineWidth(1)
+            c.line(50, y-5, 550, y-5)
+
             y -= 25
+            c.setFont("Helvetica", 11)
+
+            for kat, dane in self.koszyk.items():
+                c.drawString(50, y, f"{dane['kategoria']}")
+                c.drawString(180, y, f"{kat} zl")
+                c.drawRightString(550, y, f"{dane['cena']} zl")
+
+                suma_calkowita += dane['cena']
+                y -= 20 
+
+                c.setStrokeColorRGB(0.8, 0.8, 0.8)
+                c.line(50, y+15, 550, y+15)
+                c.setStrokeColorRGB(0, 0, 0)
+
+            y -= 30
+            c.setFillColorRGB(0.95, 0.95, 0.95)
+            c.rect(350, y-15, 200, 40, fill=1)
+            
+            c.setFillColorRGB(0, 0, 0)
             c.setFont("Helvetica-Bold", 14)
-            c.drawString(100, y, f"SUMA CALOKOWITA: {suma_calkowita} zł")
+            c.drawString(360, y, "Suma:")
+            c.drawRightString(540, y, f"{suma_calkowita} zl")
+
+            c.setFont("Helvetica-Oblique", 8)
+            c.drawCentredString(300, 50, "Dziekuje za skorzystanie z PC Order")
 
             c.save()
+
+            
 
             system_op = platform.system()
             if system_op == "Windows":
