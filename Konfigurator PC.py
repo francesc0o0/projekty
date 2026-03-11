@@ -1,4 +1,9 @@
 import tkinter 
+from tkinter import messagebox
+from reportlab.pdfgen import canvas 
+import os
+import subprocess
+import platform
 
 class KonfiguratorPC:
     def __init__(self, okno, dane):
@@ -124,6 +129,50 @@ class KonfiguratorPC:
 
         tkinter.Label(self.okno, text=f"SUMA: {suma_calkowita} zł", font=("Arial", 18, "bold")).pack(pady=20)
         tkinter.Button(self.okno, text="Wróć do menu", command=self.ekran_glowny).pack(pady=10)
+        tkinter.Button(self.okno, text="Wygeneruj PDF", bg="#4CAF50", fg="white", font=("Arial", 12, "bold"), width=25, height=2, command=self.generuj_pdf).pack(pady=10)
+
+    def generuj_pdf(self):
+        try:
+            nazwa_pliku = "Podsumowanie.pdf"
+            c = canvas.Canvas(nazwa_pliku)
+
+            c.setFont("Helvetica-Bold", 16)
+            c.drawString(100, 800, "Konfiguracja PC")
+            c.line(100, 795, 500, 795)
+
+            c.setFont("Helvetica", 12)
+            y = 760
+            suma_calkowita = 0
+
+            for nazwa, dane in self.koszyk.items():
+                ilosc = dane['ilosc']
+                cena_laczna = dane['cena'] * ilosc
+                suma_calkowita += cena_laczna
+
+                linia = f"- {dane['kategoria']}: {nazwa} x{ilosc} ({cena_laczna} zł)"
+                c.drawString(100, y, linia)
+                y -= 20
+
+            c.line(100, y, 500, y)
+            y -= 25
+            c.setFont("Helvetica-Bold", 14)
+            c.drawString(100, y, f"SUMA CALOKOWITA: {suma_calkowita} zł")
+
+            c.save()
+
+            system_op = platform.system()
+            if system_op == "Windows":
+                os.startfile(nazwa_pliku)
+            else:
+                try:
+                    subprocess.run(['xdg-open', nazwa_pliku])
+                except: 
+                    os.system(f'xdg-open {nazwa_pliku}')        
+
+            messagebox.showinfo("Sukces", f"Plik {nazwa_pliku} został wygenerowany")
+        except Exception as e:
+            messagebox.showerror("Błąd", f"Nie udało się stworzyć PDF: {e}")        
+
 
 #----------LISTA CZĘŚCI------------
 
