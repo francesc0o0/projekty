@@ -203,11 +203,15 @@ class KonfiguratorPC:
             c.setFont("Helvetica", 11)
 
             for kat, dane in self.koszyk.items():
-                c.drawString(50, y, f"{dane['kategoria']}")
-                c.drawString(180, y, f"{kat} zl")
-                c.drawRightString(550, y, f"{dane['cena']} zl")
+                ilosc = dane.get('ilosc', 1)
+                cena_jednostkowa = dane['cena']
+                cena_laczna = cena_jednostkowa * ilosc
 
-                suma_calkowita += dane['cena']
+                c.drawString(50, y, f"{dane['kategoria']}")
+                c.drawString(180, y, f"{kat} (x{ilosc})")
+                c.drawRightString(550, y, f"{cena_laczna} zl")
+
+                suma_calkowita += cena_laczna
                 y -= 20 
 
                 c.setStrokeColorRGB(0.8, 0.8, 0.8)
