@@ -6,13 +6,16 @@ import subprocess
 import platform
 import customtkinter
 from datetime import datetime
+from PIL import Image
 
 class KonfiguratorPC:
     def __init__(self, okno, dane):
         self.okno = okno
         self.dane_czesci = dane
         self.koszyk = {}
+        
 
+        
         self.okno.title("PC Order")
         self.okno.geometry("500x600")
         customtkinter.set_appearance_mode("dark")
@@ -27,22 +30,56 @@ class KonfiguratorPC:
     def ekran_glowny(self):
         self.wyczysc_okno()
 
+        self.iconcpu = customtkinter.CTkImage(Image.open("cpu.png"), size=(40, 40))
+        self.icongpu = customtkinter.CTkImage(Image.open("gpu.png"), size=(40, 40))
+        self.iconmotherboard = customtkinter.CTkImage(Image.open("motherboard.png"), size=(40, 40))
+        self.iconram = customtkinter.CTkImage(Image.open("ram.png"), size=(40, 40))
+        self.iconharddisk = customtkinter.CTkImage(Image.open("harddisk.png"), size=(40, 40))
+        self.iconpowersupply = customtkinter.CTkImage(Image.open("powersupply.png"), size=(40, 40))
+        self.iconcpucooler = customtkinter.CTkImage(Image.open("cpucooler.png"), size=(40, 40))
+        self.iconcase = customtkinter.CTkImage(Image.open("case.png"), size=(40, 40))
+
+        
+
         napisz_tytul = customtkinter.CTkLabel(self.okno, text="PC Order", font=("Arial", 22, "bold"))
-        napisz_tytul.pack(pady=30)
+        napisz_tytul.pack(pady=30, side="top")
 
         ramka_przyciski = customtkinter.CTkFrame(self.okno)
-        ramka_przyciski.pack(pady=10)
+        ramka_przyciski.pack(side="top", pady=10, fill="both")
 
         kategorie = list(self.dane_czesci.keys())
 
+        mapa_ikon = {
+            "Procesor": self.iconcpu,
+            "Karta Graficzna": self.icongpu,
+            "Płyta Główna": self.iconmotherboard,
+            "Pamięć RAM": self.iconram,
+            "Dysk": self.iconharddisk,
+            "Zasilacz": self.iconpowersupply,
+            "Chłodzenie procesora": self.iconcpucooler,
+            "Obudowa": self.iconcase,
+        }
+
         for i, nazwa_kat in enumerate(kategorie):
             wybrano =  any(p['kategoria'] == nazwa_kat for p in self.koszyk.values())
-            kolor_btn = "#FF9500" if nazwa_kat in self.koszyk else "#505050"
+            
+            ikona = mapa_ikon.get(nazwa_kat)
 
-            przycisk = customtkinter.CTkButton(ramka_przyciski, text=nazwa_kat, width=22, height=2,
-                                      fg_color=kolor_btn, text_color="white", font=("Arial", 10, "bold"), command=lambda k=nazwa_kat: self.ekran_producentow(k))
+            przycisk =customtkinter.CTkButton(
+                ramka_przyciski,
+                text=f" {nazwa_kat}",
+                image=ikona,
+                compound="left",
+                anchor="w",
+                width=160,
+                height=50,
+                fg_color="transparent",
+                text_color="white",
+                font=("Arial", 14, "bold"),
+                command=lambda k=nazwa_kat: self.ekran_producentow(k)
+            )
 
-            przycisk.grid(row=i // 2, column=i % 2, padx=15, pady=15)
+            przycisk.grid(row=i // 2, column = i % 2, padx=15, pady=15)
 
         przycisk_koszyka = customtkinter.CTkButton(self.okno, text="Finalizacja zakupy", width=30, height=2, fg_color="blue",
                                           command=self.ekran_podsumowania)    
@@ -56,7 +93,7 @@ class KonfiguratorPC:
         marki = self.dane_czesci[kategoria].keys()
 
         for m in marki:
-            customtkinter.CTkButton(self.okno, text=m, width=25, height=2, fg_color="#505050", text_color="white", command=lambda marka=m: self.ekran_modeli(kategoria, marka)).pack(pady=5)
+            customtkinter.CTkButton(self.okno, text=m, width=25, height=2, fg_color="transparent", text_color="white", command=lambda marka=m: self.ekran_modeli(kategoria, marka)).pack(pady=5)
 
         customtkinter.CTkButton(self.okno, text="Powrót", command=self.ekran_glowny).pack(pady=20)    
 
@@ -91,6 +128,7 @@ class KonfiguratorPC:
             self.koszyk[nazwa]['ilosc'] += 1
         else:
             self.koszyk[nazwa] = {
+                'nazwa': nazwa,
                 'kategoria': kategoria,
                 'cena': dane_produktu['cena'],
                 'ilosc': 1
@@ -144,7 +182,7 @@ class KonfiguratorPC:
             c.rect(0, 750, 600, 100, fill=1)
 
             c.setFillColorRGB(1, 1, 1)
-            c.setFont("Helvetica-Bold", 24)
+            c.setFont("Helvetica", 24)
             c.drawString(50, 790, "OFERTA KONFIGURACJI PC")
 
             c.setFont("Helvetica", 10)
@@ -153,7 +191,7 @@ class KonfiguratorPC:
 
             y = 700
             c.setFillColorRGB(0, 0, 0)
-            c.setFont("Helvetica-Bold", 12)
+            c.setFont("Helvetica", 12)
             c.drawString(50, y, "Kategoria")
             c.drawString(180, y, "Wybrany model")
             c.drawRightString(550, y, "Cena")
@@ -181,11 +219,11 @@ class KonfiguratorPC:
             c.rect(350, y-15, 200, 40, fill=1)
             
             c.setFillColorRGB(0, 0, 0)
-            c.setFont("Helvetica-Bold", 14)
+            c.setFont("Helvetica", 14)
             c.drawString(360, y, "Suma:")
             c.drawRightString(540, y, f"{suma_calkowita} zl")
 
-            c.setFont("Helvetica-Oblique", 8)
+            c.setFont("Helvetica", 8)
             c.drawCentredString(300, 50, "Dziekuje za skorzystanie z PC Order")
 
             c.save()
