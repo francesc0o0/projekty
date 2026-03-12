@@ -88,13 +88,73 @@ class KonfiguratorPC:
 
     def ekran_producentow(self, kategoria):
         self.wyczysc_okno()
+        
+        self.logointel = customtkinter.CTkImage(Image.open("icons/intel.png"), size=(20, 20))
+        self.logoamd = customtkinter.CTkImage(Image.open("icons/amd.png"), size=(20,20))
+        self.logomsi = customtkinter.CTkImage(Image.open("icons/msi.png"), size=(20, 20))
+        self.logoasus = customtkinter.CTkImage(Image.open("icons/asus.png"), size=(20, 20))
+        self.logogigabyte = customtkinter.CTkImage(Image.open("icons/gigabyte.jpg"), size=(20, 20))
+        self.logoasrock = customtkinter.CTkImage(Image.open("icons/asrock.png"), size=(20, 20))
+        self.logonvidia = customtkinter.CTkImage(Image.open("icons/nvidia.png"), size=(20, 20))
+        self.logoamd = customtkinter.CTkImage(Image.open("icons/amd.png"), size=(20, 20))
+        self.logosapphire = customtkinter.CTkImage(Image.open("icons/gpu.png"), size=(20,20))
+        self.logogainward = customtkinter.CTkImage(Image.open("icons/gpu.png"), size=(20, 20))
+        self.logokingston = customtkinter.CTkImage(Image.open("icons/kingston.png"), size=(20, 20))
+        self.logocorsair = customtkinter.CTkImage(Image.open("icons/corsair.jpg"), size=(20, 20))
+        self.logogskill = customtkinter.CTkImage(Image.open("icons/g.skill.jpg"), size=(20, 20))
+        self.logoadata = customtkinter.CTkImage(Image.open("icons/adata.png"), size=(20, 20))
+        self.logolexar = customtkinter.CTkImage(Image.open("icons/lexar.png"), size=(20, 20))
+        self.logosamsung = customtkinter.CTkImage(Image.open("icons/samsung.png"), size=(20, 20))
+        self.logowesterndigital = customtkinter.CTkImage(Image.open("icons/westerndigital.png"), size=(20, 20))
+        self.logoendorfy = customtkinter.CTkImage(Image.open("icons/endorfy.jpg"), size=(20, 20))
+        self.logobequiet = customtkinter.CTkImage(Image.open("icons/bequiet.jpeg"), size=(20,20))
+        self.logonzhxt = customtkinter.CTkImage(Image.open("icons/nzxt.jpg"), size=(20, 20))
+        self.logolianli = customtkinter.CTkImage(Image.open("icons/lianli.jpg"), size=(20, 20))
+        self.logofractaldesign = customtkinter.CTkImage(Image.open("icons/fractaldesign.jpg"), size=(20, 20))
+
         customtkinter.CTkLabel(self.okno, text=f"Wybierz markę: {kategoria}", font=("Arial", 14)).pack(pady=20)
 
         marki = self.dane_czesci[kategoria].keys()
 
-        for m in marki:
-            customtkinter.CTkButton(self.okno, text=m, width=25, height=2, fg_color="transparent", text_color="white", command=lambda marka=m: self.ekran_modeli(kategoria, marka)).pack(pady=5)
+        mapa_logo = {
+            "Intel":self.logointel,
+            "AMD": self.logoamd,
+            "Msi": self.logomsi,
+            "Asus": self.logoasus,
+            "Gigabyte": self.logogigabyte,
+            "ASRock": self.logoasrock,
+            "Nvdia": self.logonvidia,
+            "Sapphire": self.logosapphire,
+            "Gainward": self.logogainward,
+            "Kingston": self.logokingston,
+            "Corsair": self.logocorsair,
+            "G.Skill": self.logogskill,
+            "ADATA": self.logoadata,
+            "Lexar": self.logolexar,
+            "Samsung": self.logosamsung,
+            "Western Digital": self.logowesterndigital,
+            "Endorfy": self.logoendorfy,
+            "be quiet": self.logobequiet,
+            "NZHXT": self.logonzhxt,
+            "Lian Li": self.logolianli,
+            "Fractal Design": self.logofractaldesign
+        }
 
+        for m in marki:
+            wybrane_logo = mapa_logo.get(m)
+
+            przycisk = customtkinter.CTkButton(
+                self.okno,
+                text=m,
+                image=wybrane_logo if wybrane_logo else None,
+                compound="left",
+                height=40, 
+                width=250,
+                fg_color="transparent",
+                command=lambda m=m: self.ekran_modeli(kategoria, m)
+            )
+            przycisk.pack(pady=10)
+            
         customtkinter.CTkButton(self.okno, text="Powrót", command=self.ekran_glowny).pack(pady=20)    
 
     def ekran_modeli(self, kategoria, grupa):
