@@ -30,14 +30,14 @@ class KonfiguratorPC:
     def ekran_glowny(self):
         self.wyczysc_okno()
 
-        self.iconcpu = customtkinter.CTkImage(Image.open("cpu.png"), size=(40, 40))
-        self.icongpu = customtkinter.CTkImage(Image.open("gpu.png"), size=(40, 40))
-        self.iconmotherboard = customtkinter.CTkImage(Image.open("motherboard.png"), size=(40, 40))
-        self.iconram = customtkinter.CTkImage(Image.open("ram.png"), size=(40, 40))
-        self.iconharddisk = customtkinter.CTkImage(Image.open("harddisk.png"), size=(40, 40))
-        self.iconpowersupply = customtkinter.CTkImage(Image.open("powersupply.png"), size=(40, 40))
-        self.iconcpucooler = customtkinter.CTkImage(Image.open("cpucooler.png"), size=(40, 40))
-        self.iconcase = customtkinter.CTkImage(Image.open("case.png"), size=(40, 40))
+        self.iconcpu = customtkinter.CTkImage(Image.open("icons/cpu.png"), size=(40, 40))
+        self.icongpu = customtkinter.CTkImage(Image.open("icons/gpu.png"), size=(40, 40))
+        self.iconmotherboard = customtkinter.CTkImage(Image.open("icons/motherboard.png"), size=(40, 40))
+        self.iconram = customtkinter.CTkImage(Image.open("icons/ram.png"), size=(40, 40))
+        self.iconharddisk = customtkinter.CTkImage(Image.open("icons/harddisk.png"), size=(40, 40))
+        self.iconpowersupply = customtkinter.CTkImage(Image.open("icons/powersupply.png"), size=(40, 40))
+        self.iconcpucooler = customtkinter.CTkImage(Image.open("icons/cpucooler.png"), size=(40, 40))
+        self.iconcase = customtkinter.CTkImage(Image.open("icons/case.png"), size=(40, 40))
 
         
 
