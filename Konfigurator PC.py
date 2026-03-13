@@ -7,6 +7,8 @@ import platform
 import customtkinter
 from datetime import datetime
 from PIL import Image
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 
 class KonfiguratorPC(customtkinter.CTk):
     def __init__(self):
@@ -287,6 +289,9 @@ class KonfiguratorPC(customtkinter.CTk):
         customtkinter.CTkButton(self, text="Wygeneruj PDF", fg_color="#4CAF50", text_color="white", font=("Arial", 12, "bold"), width=25, height=2, command=self.generuj_pdf).pack(pady=10)
 
     def generuj_pdf(self):
+        pdfmetrics.registerFont(TTFont('Roboto-Regular', 'Roboto-Regular.ttf'))
+
+        
         try:
             nazwa_pliku = "Podsumowanie.pdf"
             c = canvas.Canvas(nazwa_pliku)
@@ -301,16 +306,16 @@ class KonfiguratorPC(customtkinter.CTk):
                 print(f"Błąd logo: {e}")    
 
             c.setFillColorRGB(1, 1, 1)
-            c.setFont("Helvetica", 24)
+            c.setFont("Roboto-Regular", 24)
             c.drawString(120, 790, "OFERTA KONFIGURACJI PC")
 
-            c.setFont("Helvetica", 10)
+            c.setFont("Roboto-Regular", 10)
             data_teraz = datetime.now().strftime("%d.%m.%Y %H:%M")
             c.drawRightString(550, 765, f"Data wystawienia: {data_teraz}")
 
             y = 700
             c.setFillColorRGB(0, 0, 0)
-            c.setFont("Helvetica", 12)
+            c.setFont("Roboto-Regular", 12)
             c.drawString(50, y, "Kategoria")
             c.drawString(180, y, "Wybrany model")
             c.drawRightString(550, y, "Cena")
@@ -319,7 +324,7 @@ class KonfiguratorPC(customtkinter.CTk):
             c.line(50, y-5, 550, y-5)
 
             y -= 25
-            c.setFont("Helvetica", 11)
+            c.setFont("Roboto-Regular", 11)
 
             for kat, dane in self.koszyk.items():
                 ilosc = dane.get('ilosc', 1)
@@ -328,7 +333,7 @@ class KonfiguratorPC(customtkinter.CTk):
 
                 c.drawString(50, y, f"{dane['kategoria']}")
                 c.drawString(180, y, f"{kat} (x{ilosc})")
-                c.drawRightString(550, y, f"{cena_laczna} zl")
+                c.drawRightString(550, y, f"{cena_laczna} zł")
 
                 suma_calkowita += cena_laczna
                 y -= 20 
@@ -342,12 +347,12 @@ class KonfiguratorPC(customtkinter.CTk):
             c.rect(350, y-15, 200, 40, fill=1)
             
             c.setFillColorRGB(0, 0, 0)
-            c.setFont("Helvetica", 14)
+            c.setFont("Roboto-Regular", 14)
             c.drawString(360, y, "Suma:")
-            c.drawRightString(540, y, f"{suma_calkowita} zl")
+            c.drawRightString(540, y, f"{suma_calkowita} zł")
 
-            c.setFont("Helvetica", 8)
-            c.drawCentredString(300, 50, "Dziekuje za skorzystanie z PC Order")
+            c.setFont("Roboto-Regular", 8)
+            c.drawCentredString(300, 50, "Dziękuje za skorzystanie z PC Order")
 
             c.save()
 
