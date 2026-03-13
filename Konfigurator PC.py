@@ -8,23 +8,25 @@ import customtkinter
 from datetime import datetime
 from PIL import Image
 
-class KonfiguratorPC:
-    def __init__(self, okno, dane):
-        self.okno = okno
-        self.dane_czesci = dane
+class KonfiguratorPC(customtkinter.CTk):
+    def __init__(self):
+        super().__init__()
+        
         self.koszyk = {}
         
-
+        self.dane_czesci = KonfiguratorPC.czesci_pc
         
-        self.okno.title("PC Order")
-        self.okno.geometry("500x600")
+        self.title("PC Order")
+        self.geometry("500x600")
         customtkinter.set_appearance_mode("dark")
         customtkinter.set_default_color_theme("blue")
 
         self.ekran_glowny()
 
+        
+
     def wyczysc_okno(self):
-        for widget in self.okno.winfo_children():
+        for widget in self.winfo_children():
             widget.destroy()
 
     def ekran_glowny(self):
@@ -41,10 +43,10 @@ class KonfiguratorPC:
 
         
 
-        napisz_tytul = customtkinter.CTkLabel(self.okno, text="PC Order", font=("Arial", 22, "bold"))
+        napisz_tytul = customtkinter.CTkLabel(self, text="PC Order", font=("Arial", 22, "bold"))
         napisz_tytul.pack(pady=30, side="top")
 
-        ramka_przyciski = customtkinter.CTkFrame(self.okno)
+        ramka_przyciski = customtkinter.CTkFrame(self)
         ramka_przyciski.pack(side="top", pady=10, fill="both")
 
         kategorie = list(self.dane_czesci.keys())
@@ -81,10 +83,15 @@ class KonfiguratorPC:
 
             przycisk.grid(row=i // 2, column = i % 2, padx=15, pady=15)
 
-        przycisk_koszyka = customtkinter.CTkButton(self.okno, text="Finalizacja zakupy", width=100, height=8, fg_color="blue",
+        przycisk_koszyka = customtkinter.CTkButton(self, text="Finalizacja zakupy", width=100, height=8, fg_color="blue",
                                           command=self.ekran_podsumowania)    
         
         przycisk_koszyka.pack(side="bottom", pady=20)
+
+        self.btn_ustawienia = customtkinter.CTkButton(
+            self, text="Ustawienia", command=self.ekran_ustawien, fg_color="#4A4A4A"
+        )
+        self.btn_ustawienia.pack(pady=10)
 
     def ekran_producentow(self, kategoria):
         self.wyczysc_okno()
@@ -112,7 +119,7 @@ class KonfiguratorPC:
         self.logolianli = customtkinter.CTkImage(Image.open("icons/lianli.jpg"), size=(42, 42))
         self.logofractaldesign = customtkinter.CTkImage(Image.open("icons/fractaldesign.jpg"), size=(42, 42))
 
-        customtkinter.CTkLabel(self.okno, text=f"Wybierz markę: {kategoria}", font=("Arial", 14)).pack(pady=20)
+        customtkinter.CTkLabel(self, text=f"Wybierz markę: {kategoria}", font=("Arial", 14)).pack(pady=20)
 
         marki = self.dane_czesci[kategoria].keys()
 
@@ -144,7 +151,7 @@ class KonfiguratorPC:
             wybrane_logo = mapa_logo.get(m)
 
             przycisk = customtkinter.CTkButton(
-                self.okno,
+                self,
                 text=m,
                 image=wybrane_logo if wybrane_logo else None,
                 compound="left",
@@ -155,19 +162,19 @@ class KonfiguratorPC:
             )
             przycisk.pack(pady=10)
             
-        customtkinter.CTkButton(self.okno, text="Powrót", command=self.ekran_glowny).pack(pady=20)    
+        customtkinter.CTkButton(self, text="Powrót", command=self.ekran_glowny).pack(pady=20)    
 
     def ekran_modeli(self, kategoria, grupa):
         self.aktualna_grupa = grupa
         self.wyczysc_okno()
 
 
-        napis = customtkinter.CTkLabel(self.okno, text=f"Wybierz markę ({kategoria}):", font=("Arial", 14))
+        napis = customtkinter.CTkLabel(self, text=f"Wybierz markę ({kategoria}):", font=("Arial", 14))
         napis.pack(pady=30)
         
         lista_modeli = self.dane_czesci[kategoria][grupa]
         for model in lista_modeli:
-            ramka_modelu = customtkinter.CTkFrame(self.okno, border_width=1)
+            ramka_modelu = customtkinter.CTkFrame(self, border_width=1)
             ramka_modelu.pack(fill="x", padx=20, pady=5)
 
             ilosc = self.koszyk[model['nazwa']]['ilosc'] if model['nazwa'] in self.koszyk else 0 
@@ -179,7 +186,7 @@ class KonfiguratorPC:
 
             customtkinter.CTkButton(ramka_modelu, text="-", width=3, command=lambda m=model: self.usun_jedna_sztuke(m['nazwa'], kategoria, grupa)).pack(side="right", padx=2)
 
-        przycisk_powrot = customtkinter.CTkButton(self.okno, text="Cofnij", command=lambda k=kategoria : self.ekran_producentow(k))
+        przycisk_powrot = customtkinter.CTkButton(self, text="Cofnij", command=lambda k=kategoria : self.ekran_producentow(k))
         przycisk_powrot.pack(pady=20) 
 
     def dodaj_do_koszyka(self, kategoria, dane_produktu, grupa):
@@ -206,11 +213,58 @@ class KonfiguratorPC:
     def usun_z_koszyka_calkowicie(self, nazwa_produktu):
         if nazwa_produktu in self.koszyk:
             del self.koszyk[nazwa_produktu]
-        self.ekran_podsumowania()        
+        self.ekran_podsumowania() 
+
+    def ekran_ustawien(self):
+        self.wyczysc_okno()
+
+        customtkinter.CTkLabel(self, text="Dodaj podzespół", font=("Arial", 20)).pack(pady=15)
+
+        kategorie = list(self.czesci_pc.keys())
+        self.wybrana_kat = customtkinter.StringVar(value=kategorie[0])
+
+        customtkinter.CTkLabel(self, text="Wybierz kategorię:").pack()
+        self.menu_kat = customtkinter.CTkOptionMenu(self, values=kategorie, variable= self.wybrana_kat)
+        self.menu_kat.pack(pady=10)
+
+        self.entry_marka = customtkinter.CTkEntry(self, placeholder_text="Marka")
+        self.entry_marka.pack(pady=10)
+
+        self.entry_nazwa = customtkinter.CTkEntry(self, placeholder_text="Nazwa modelu")
+        self.entry_nazwa.pack(pady=10)
+
+        self.entry_cena  = customtkinter.CTkEntry(self, placeholder_text="Cena")
+        self.entry_cena.pack(pady=10)
+
+        customtkinter.CTkButton(self, text="Zapisz w bazie danych", command=self.dodaj_czesc).pack(pady=15)
+        customtkinter.CTkButton(self, text="Wróć", command=self.ekran_glowny, fg_color="transparent", border_width=1).pack()
+
+    def dodaj_czesc(self):
+        kat = self.wybrana_kat.get()
+        marka = self.entry_marka.get().strip()
+        nazwa = self.entry_nazwa.get().strip()
+        cena = self.entry_cena.get().strip()
+
+        if all([marka, nazwa, cena]):
+            try:
+                cena_int = int(cena)
+
+                if marka not in self.czesci_pc[kat]:
+                    self.czesci_pc[kat][marka] = []
+
+                self.czesci_pc[kat][marka].append({"nazwa": nazwa, "cena": cena_int})
+
+                messagebox.showinfo("Sukces", f"Dodano {nazwa} do katgorii {kat}")
+                self.ekran_ustawien()
+
+            except ValueError:
+                messagebox.showerror("Błąd", "Cena musi być liczbą całkowitą!")
+        else:
+            messagebox.showwarning("Pole puste", "Proszę wypełnić wszystkie pola.")                               
 
     def ekran_podsumowania(self):
         self.wyczysc_okno()
-        customtkinter.CTkLabel(self.okno, text="Twoja Konfiguracja", font=("Arial", 18, "bold")).pack(pady=20)
+        customtkinter.CTkLabel(self, text="Twoja Konfiguracja", font=("Arial", 18, "bold")).pack(pady=20)
 
         suma_calkowita = 0 
         for nazwa, dane in self.koszyk.items():
@@ -218,7 +272,7 @@ class KonfiguratorPC:
             cena_laczna = dane['cena'] * ilosc
             suma_calkowita +=  cena_laczna
 
-            ramka_wpisu = customtkinter.CTkFrame(self.okno)
+            ramka_wpisu = customtkinter.CTkFrame(self)
             ramka_wpisu.pack(fill="x", padx=40, pady=2)
             
             tekst = f"{dane['kategoria']}: {nazwa} x{ilosc} - {cena_laczna} zł"
@@ -228,9 +282,9 @@ class KonfiguratorPC:
             
             
 
-        customtkinter.CTkLabel(self.okno, text=f"SUMA: {suma_calkowita} zł", font=("Arial", 18, "bold")).pack(pady=20)
-        customtkinter.CTkButton(self.okno, text="Wróć do menu", command=self.ekran_glowny).pack(pady=10)
-        customtkinter.CTkButton(self.okno, text="Wygeneruj PDF", fg_color="#4CAF50", text_color="white", font=("Arial", 12, "bold"), width=25, height=2, command=self.generuj_pdf).pack(pady=10)
+        customtkinter.CTkLabel(self, text=f"SUMA: {suma_calkowita} zł", font=("Arial", 18, "bold")).pack(pady=20)
+        customtkinter.CTkButton(self, text="Wróć do menu", command=self.ekran_glowny).pack(pady=10)
+        customtkinter.CTkButton(self, text="Wygeneruj PDF", fg_color="#4CAF50", text_color="white", font=("Arial", 12, "bold"), width=25, height=2, command=self.generuj_pdf).pack(pady=10)
 
     def generuj_pdf(self):
         try:
@@ -315,201 +369,200 @@ class KonfiguratorPC:
 
 #----------LISTA CZĘŚCI------------
 
-czesci_pc = {
-    "Procesor": {
-        "Intel": [
-            {"nazwa": "Core i3-14100F", "cena": 550},
-            {"nazwa": "Core i5-13400F", "cena": 900}, 
-            {"nazwa": "Core i5-14600K", "cena": 1350},
-            {"nazwa": "Core i7-14700K", "cena": 1850},
-            {"nazwa": "Core i9-14900K", "cena": 2600}
-        ],
-        "AMD": [
-            {"nazwa": "Ryzen 5 5600", "cena": 500},
-            {"nazwa": "Ryzen 5 7600", "cena": 850}, 
-            {"nazwa": "Ryzen 7 7700X", "cena": 1300},
-            {"nazwa": "Ryzen 7 7800x3d", "cena": 2000},
-            {"nazwa": "Ryzen 9 7950X3D", "cena": 2700}
-        ]
-    },
-    "Płyta Główna": {
-        "Msi": [
-            {"nazwa": "A520M-A PRO", "cena": 300},
-            {"nazwa": "B660 Tomahawk", "cena": 800},
-            {"nazwa": "MAG B650 TOMAHAWK WIFI", "cena": 950},
-            {"nazwa": "MPG Z790 EDGE WIFI", "cena": 1500},
-            {"nazwa": "MEG Z790 GODLIKE", "cena": 5000}
-        ],
-        "Asus": [
-            {"nazwa": "PRIME H610M-K", "cena": 350},
-            {"nazwa": "B760-plus", "cena": 600},
-            {"nazwa": "TUF GAMING B650-PLUS", "cena": 900},
-            {"nazwa": "ROG STRIX Z790-F GAMING", "cena": 1800},
-            {"nazwa": "ROG MAXIMUS Z790 HERO", "cena": 2900}
-        ],
-        "Gigabyte": [
-            {"nazwa": "B550M DS3H", "cena": 400},
-            {"nazwa": "B650 GAMING X AX", "cena": 850},
-            {"nazwa": "B760 AORUS ELITE AX", "cena": 1000},
-            {"nazwa": "Z790 AORUS MASTER", "cena": 2200},
-            {"nazwa": "X670E AORUS XTREME", "cena": 3200}
-        ],
-        "ASRock": [
-            {"nazwa": "B660M Pro RS", "cena": 500},
-            {"nazwa": "B650 Pro RS", "cena": 800},
-            {"nazwa": "Z790 Steel Legend", "cena": 1200},
-            {"nazwa": "X670E Taichi", "cena": 2300}
-        ]
-    },
-    "Karta Graficzna": {
-        "Nvdia": [
-            {"nazwa": "Rtx 4060", "cena": 1300}, 
-            {"nazwa": "Rtx 4070 Super", "cena": 2700},
-            {"nazwa": "Rtx 4080 Super", "cena": 4600},
-            {"nazwa": "Rtx 4090", "cena": 8500},
-            {"nazwa": "Rtx 5090", "cena": 13000}
-        ],
-        "AMD": [
-            {"nazwa": "RX 7600", "cena": 1200},
-            {"nazwa": "RX 7700 XT", "cena": 1500}, 
-            {"nazwa": "RX 7800 XT", "cena": 2200},
-            {"nazwa": "RX 7900 XTX", "cena": 4300},
-            {"nazwa": "RX 9070 XT", "cena": 3000}
-        ],
-        "Sapphire": [
-            {"nazwa": "RX 7600 Pulse", "cena": 1250},
-            {"nazwa": "RX 7800 XT Pure", "cena": 2350},
-            {"nazwa": "RX 7900 GRE Nitro+", "cena": 2800},
-            {"nazwa": "RX 7900 XTX Vapor-X", "cena": 4800}
-        ],
-        "Gainward": [
-            {"nazwa": "RTX 4060 Ghost", "cena": 1250},
-            {"nazwa": "RTX 4070 Super Ghost", "cena": 2650},
-            {"nazwa": "RTX 4070 Ti Super Panther", "cena": 3700},
-            {"nazwa": "RTX 4080 Super Phoenix", "cena": 4500}
-        ]
-    },
-    "Pamięć RAM": {
-        "Kingston": [
-            {"nazwa": "DDR4 16GB 3600Mhz", "cena": 200},
-            {"nazwa": "DDR5 16GB 6000Mhz", "cena": 800},
-            {"nazwa": "FURY Beast 32GB 6000Mhz", "cena": 500},
-            {"nazwa": "FURY Renegade 64GB 6000Mhz", "cena": 1100}
-        ],
-        "Corsair": [
-            {"nazwa": "Vengeance LPX 16GB 3600Mhz", "cena": 220},
-            {"nazwa": "Vengeance RGB 32GB 6000Mhz", "cena": 550},
-            {"nazwa": "DDR5 32GB 6400Mhz", "cena": 1600},
-            {"nazwa": "Dominator Titanium 64GB 7200Mhz", "cena": 1800}
-        ],
-        "G.Skill": [
-            {"nazwa": "Ripjaws V 16GB 3600Mhz", "cena": 210},
-            {"nazwa": "Flare X5 32GB 6000Mhz", "cena": 520},
-            {"nazwa": "Trident Z5 RGB 32GB 6400Mhz", "cena": 650},
-            {"nazwa": "Trident Z5 Neo 64GB 6000Mhz", "cena": 1050}
-        ],
-        "ADATA": [
-            {"nazwa": "XPG Spectrix 16GB 3600Mhz", "cena": 230},
-            {"nazwa": "XPG Lancer 32GB 6000Mhz", "cena": 540},
-            {"nazwa": "XPG Lancer RGB 32GB 7200Mhz", "cena": 750}
-        ]
-    },
-    "Dysk": {
-        "Lexar": [
-            {"nazwa": "NM620 1TB", "cena": 250},
-            {"nazwa": "NM710 1TB", "cena": 300},
-            {"nazwa": "980 Pro 1TB", "cena": 400},
-            {"nazwa": "NM790 2TB", "cena": 600},
-            {"nazwa": "NM790 4TB", "cena": 1100}
-        ],
-        "Samsung": [
-            {"nazwa": "980 500GB", "cena": 200},
-            {"nazwa": "NM790 2TB", "cena": 600},
-            {"nazwa": "990 PRO 1TB", "cena": 450},
-            {"nazwa": "990 PRO 2TB", "cena": 800},
-            {"nazwa": "990 PRO 4TB", "cena": 1500}
-        ],
-        "Western Digital": [
-            {"nazwa": "WD Blue SN580 1TB", "cena": 280},
-            {"nazwa": "WD Black SN770 1TB", "cena": 350},
-            {"nazwa": "WD Black SN850X 2TB", "cena": 750},
-            {"nazwa": "WD Black SN850X 4TB", "cena": 1400}
-        ]
-    },
-    "Zasilacz": {
-        "Endorfy": [
-            {"nazwa": "Vervo L5 600W", "cena": 250},
-            {"nazwa": "Vero M5 700W", "cena": 320},
-            {"nazwa": "Supremo FM5 750W", "cena": 420},
-            {"nazwa": "Supremo FM5 850W", "cena": 480},
-            {"nazwa": "Supremo FM5 1000W", "cena": 650}
-        ],
-        "be quiet": [
-            {"nazwa": "System Power 10 600W", "cena": 280},
-            {"nazwa": "Pure Power 12 750W", "cena": 450},
-            {"nazwa": "Pure Power 12 850W", "cena": 500}, 
-            {"nazwa": "Pure Power 12 1000W", "cena": 700},
-            {"nazwa": "Dark Power 13 1200W", "cena": 1300}
-        ],
-        "Corsair": [
-            {"nazwa": "CV650 650W", "cena": 300},
-            {"nazwa": "RM750e 750W", "cena": 500},
-            {"nazwa": "RM850x Shift", "cena": 700},
-            {"nazwa": "HX1200 1200W", "cena": 1100},
-            {"nazwa": "AX1600i 1600W", "cena": 2500}
-        ]
-    },
-    "Obudowa": {
-        "NZHXT": [
-            {"nazwa": "H5 Flow", "cena": 400},
-            {"nazwa": "H7 Flow", "cena": 550},
-            {"nazwa": "H9 flow", "cena": 750},
-            {"nazwa": "H9 Elite", "cena": 1100}
-        ],
-        "be quiet": [
-            {"nazwa": "Pure Base 500", "cena": 320},
-            {"nazwa": "Pure Base 500DX", "cena": 450},
-            {"nazwa": "Shadow base 802", "cena": 400},
-            {"nazwa": "Light base 500", "cena": 500},
-            {"nazwa": "Dark Base Pro 901", "cena": 1400}
-        ],
-        "Lian Li": [
-            {"nazwa": "Lancool 216", "cena": 450},
-            {"nazwa": "O11 Dynamic Mini", "cena": 600},
-            {"nazwa": "O11 Dynamic EVO", "cena": 850},
-            {"nazwa": "O11 Vision", "cena": 900}
-        ],
-        "Fractal Design": [
-            {"nazwa": "Pop Air", "cena": 380},
-            {"nazwa": "Meshify 2 Compact", "cena": 550},
-            {"nazwa": "North", "cena": 700},
-            {"nazwa": "Torrent", "cena": 900}
-        ]
-    },
-    "Chłodzenie procesora": {
-        "Powietrzne": [
-            {"nazwa": "Spartan 5", "cena": 80},
-            {"nazwa": "Fera 5 Dual", "cena": 150},
-            {"nazwa": "Fortis 5 Dual", "cena": 220},
-            {"nazwa": "Deepcool AK620", "cena": 320},
-            {"nazwa": "Noctua NH-D15", "cena": 520}
-        ],
-        "Wodne (AIO)": [
-            {"nazwa": "Endorfy Navis F240", "cena": 350},
-            {"nazwa": "Arctic Liquid Freezer III 240", "cena": 380},
-            {"nazwa": "Arctic Liquid Freezer III 360", "cena": 450},
-            {"nazwa": "NZHXT Kraken", "cena": 650},
-            {"nazwa": "NZXT Kraken Elite 360", "cena": 1200}
-        ]
-    }
+    czesci_pc = {
+        "Procesor": {
+            "Intel": [
+                {"nazwa": "Core i3-14100F", "cena": 550},
+                {"nazwa": "Core i5-13400F", "cena": 900}, 
+                {"nazwa": "Core i5-14600K", "cena": 1350},
+                {"nazwa": "Core i7-14700K", "cena": 1850},
+                {"nazwa": "Core i9-14900K", "cena": 2600}
+            ],
+            "AMD": [
+                {"nazwa": "Ryzen 5 5600", "cena": 500},
+                {"nazwa": "Ryzen 5 7600", "cena": 850}, 
+                {"nazwa": "Ryzen 7 7700X", "cena": 1300},
+                {"nazwa": "Ryzen 7 7800x3d", "cena": 2000},
+                {"nazwa": "Ryzen 9 7950X3D", "cena": 2700}
+            ]
+        },
+        "Płyta Główna": {
+            "Msi": [
+                {"nazwa": "A520M-A PRO", "cena": 300},
+                {"nazwa": "B660 Tomahawk", "cena": 800},
+                {"nazwa": "MAG B650 TOMAHAWK WIFI", "cena": 950},
+                {"nazwa": "MPG Z790 EDGE WIFI", "cena": 1500},
+                {"nazwa": "MEG Z790 GODLIKE", "cena": 5000}
+            ],
+            "Asus": [
+                {"nazwa": "PRIME H610M-K", "cena": 350},
+                {"nazwa": "B760-plus", "cena": 600},
+                {"nazwa": "TUF GAMING B650-PLUS", "cena": 900},
+                {"nazwa": "ROG STRIX Z790-F GAMING", "cena": 1800},
+                {"nazwa": "ROG MAXIMUS Z790 HERO", "cena": 2900}
+            ],
+            "Gigabyte": [
+                {"nazwa": "B550M DS3H", "cena": 400},
+                {"nazwa": "B650 GAMING X AX", "cena": 850},
+                {"nazwa": "B760 AORUS ELITE AX", "cena": 1000},
+                {"nazwa": "Z790 AORUS MASTER", "cena": 2200},
+                {"nazwa": "X670E AORUS XTREME", "cena": 3200}
+            ],
+            "ASRock": [
+                {"nazwa": "B660M Pro RS", "cena": 500},
+                {"nazwa": "B650 Pro RS", "cena": 800},
+                {"nazwa": "Z790 Steel Legend", "cena": 1200},
+                {"nazwa": "X670E Taichi", "cena": 2300}
+            ]
+        },
+        "Karta Graficzna": {
+            "Nvdia": [
+                {"nazwa": "Rtx 4060", "cena": 1300}, 
+                {"nazwa": "Rtx 4070 Super", "cena": 2700},
+                {"nazwa": "Rtx 4080 Super", "cena": 4600},
+                {"nazwa": "Rtx 4090", "cena": 8500},
+                {"nazwa": "Rtx 5090", "cena": 13000}
+            ],
+            "AMD": [
+                {"nazwa": "RX 7600", "cena": 1200},
+                {"nazwa": "RX 7700 XT", "cena": 1500}, 
+                {"nazwa": "RX 7800 XT", "cena": 2200},
+                {"nazwa": "RX 7900 XTX", "cena": 4300},
+                {"nazwa": "RX 9070 XT", "cena": 3000}
+            ],
+            "Sapphire": [
+                {"nazwa": "RX 7600 Pulse", "cena": 1250},
+                {"nazwa": "RX 7800 XT Pure", "cena": 2350},
+                {"nazwa": "RX 7900 GRE Nitro+", "cena": 2800},
+                {"nazwa": "RX 7900 XTX Vapor-X", "cena": 4800}
+            ],
+            "Gainward": [
+                {"nazwa": "RTX 4060 Ghost", "cena": 1250},
+                {"nazwa": "RTX 4070 Super Ghost", "cena": 2650},
+                {"nazwa": "RTX 4070 Ti Super Panther", "cena": 3700},
+                {"nazwa": "RTX 4080 Super Phoenix", "cena": 4500}
+            ]
+        },
+        "Pamięć RAM": {
+            "Kingston": [
+                {"nazwa": "DDR4 16GB 3600Mhz", "cena": 200},
+                {"nazwa": "DDR5 16GB 6000Mhz", "cena": 800},
+                {"nazwa": "FURY Beast 32GB 6000Mhz", "cena": 500},
+                {"nazwa": "FURY Renegade 64GB 6000Mhz", "cena": 1100}
+            ],
+            "Corsair": [
+                {"nazwa": "Vengeance LPX 16GB 3600Mhz", "cena": 220},
+                {"nazwa": "Vengeance RGB 32GB 6000Mhz", "cena": 550},
+                {"nazwa": "DDR5 32GB 6400Mhz", "cena": 1600},
+                {"nazwa": "Dominator Titanium 64GB 7200Mhz", "cena": 1800}
+            ],
+            "G.Skill": [
+                {"nazwa": "Ripjaws V 16GB 3600Mhz", "cena": 210},
+                {"nazwa": "Flare X5 32GB 6000Mhz", "cena": 520},
+                {"nazwa": "Trident Z5 RGB 32GB 6400Mhz", "cena": 650},
+                {"nazwa": "Trident Z5 Neo 64GB 6000Mhz", "cena": 1050}
+            ],
+            "ADATA": [
+                {"nazwa": "XPG Spectrix 16GB 3600Mhz", "cena": 230},
+                {"nazwa": "XPG Lancer 32GB 6000Mhz", "cena": 540},
+                {"nazwa": "XPG Lancer RGB 32GB 7200Mhz", "cena": 750}
+            ]
+        },
+        "Dysk": {
+            "Lexar": [
+                {"nazwa": "NM620 1TB", "cena": 250},
+                {"nazwa": "NM710 1TB", "cena": 300},
+                {"nazwa": "980 Pro 1TB", "cena": 400},
+                {"nazwa": "NM790 2TB", "cena": 600},
+                {"nazwa": "NM790 4TB", "cena": 1100}
+            ],
+            "Samsung": [
+                {"nazwa": "980 500GB", "cena": 200},
+                {"nazwa": "NM790 2TB", "cena": 600},
+                {"nazwa": "990 PRO 1TB", "cena": 450},
+                {"nazwa": "990 PRO 2TB", "cena": 800},
+                {"nazwa": "990 PRO 4TB", "cena": 1500}
+            ],
+            "Western Digital": [
+                {"nazwa": "WD Blue SN580 1TB", "cena": 280},
+                {"nazwa": "WD Black SN770 1TB", "cena": 350},
+                {"nazwa": "WD Black SN850X 2TB", "cena": 750},
+                {"nazwa": "WD Black SN850X 4TB", "cena": 1400}
+            ]
+        },
+        "Zasilacz": {
+            "Endorfy": [
+                {"nazwa": "Vervo L5 600W", "cena": 250},
+                {"nazwa": "Vero M5 700W", "cena": 320},
+                {"nazwa": "Supremo FM5 750W", "cena": 420},
+                {"nazwa": "Supremo FM5 850W", "cena": 480},
+                {"nazwa": "Supremo FM5 1000W", "cena": 650}
+            ],
+            "be quiet": [
+                {"nazwa": "System Power 10 600W", "cena": 280},
+                {"nazwa": "Pure Power 12 750W", "cena": 450},
+                {"nazwa": "Pure Power 12 850W", "cena": 500}, 
+                {"nazwa": "Pure Power 12 1000W", "cena": 700},
+                {"nazwa": "Dark Power 13 1200W", "cena": 1300}
+            ],
+            "Corsair": [
+                {"nazwa": "CV650 650W", "cena": 300},
+                {"nazwa": "RM750e 750W", "cena": 500},
+                {"nazwa": "RM850x Shift", "cena": 700},
+                {"nazwa": "HX1200 1200W", "cena": 1100},
+                {"nazwa": "AX1600i 1600W", "cena": 2500}
+            ]
+        },
+        "Obudowa": {
+            "NZHXT": [
+                {"nazwa": "H5 Flow", "cena": 400},
+                {"nazwa": "H7 Flow", "cena": 550},
+                {"nazwa": "H9 flow", "cena": 750},
+                {"nazwa": "H9 Elite", "cena": 1100}
+            ],
+            "be quiet": [
+                {"nazwa": "Pure Base 500", "cena": 320},
+                {"nazwa": "Pure Base 500DX", "cena": 450},
+                {"nazwa": "Shadow base 802", "cena": 400},
+                {"nazwa": "Light base 500", "cena": 500},
+                {"nazwa": "Dark Base Pro 901", "cena": 1400}
+            ],
+            "Lian Li": [
+                {"nazwa": "Lancool 216", "cena": 450},
+                {"nazwa": "O11 Dynamic Mini", "cena": 600},
+                {"nazwa": "O11 Dynamic EVO", "cena": 850},
+                {"nazwa": "O11 Vision", "cena": 900}
+            ],
+            "Fractal Design": [
+                {"nazwa": "Pop Air", "cena": 380},
+                {"nazwa": "Meshify 2 Compact", "cena": 550},
+                {"nazwa": "North", "cena": 700},
+                {"nazwa": "Torrent", "cena": 900}
+            ]
+        },
+        "Chłodzenie procesora": {
+            "Powietrzne": [
+                {"nazwa": "Spartan 5", "cena": 80},
+                {"nazwa": "Fera 5 Dual", "cena": 150},
+                {"nazwa": "Fortis 5 Dual", "cena": 220},
+                {"nazwa": "Deepcool AK620", "cena": 320},
+                {"nazwa": "Noctua NH-D15", "cena": 520}
+            ],
+            "Wodne (AIO)": [
+                {"nazwa": "Endorfy Navis F240", "cena": 350},
+                {"nazwa": "Arctic Liquid Freezer III 240", "cena": 380},
+                {"nazwa": "Arctic Liquid Freezer III 360", "cena": 450},
+                {"nazwa": "NZHXT Kraken", "cena": 650},
+                {"nazwa": "NZXT Kraken Elite 360", "cena": 1200}
+            ]
+        }
     
 
-}    
+    }    
 
-
-root = customtkinter.CTk()
-aplikacja = KonfiguratorPC(root, czesci_pc)
-root.mainloop()
+if __name__ == "__main__":
+    aplikacja = KonfiguratorPC()
+    aplikacja.mainloop()
 
                    
 
