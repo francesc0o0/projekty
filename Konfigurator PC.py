@@ -81,7 +81,7 @@ class KonfiguratorPC:
 
             przycisk.grid(row=i // 2, column = i % 2, padx=15, pady=15)
 
-        przycisk_koszyka = customtkinter.CTkButton(self.okno, text="Finalizacja zakupy", width=30, height=2, fg_color="blue",
+        przycisk_koszyka = customtkinter.CTkButton(self.okno, text="Finalizacja zakupy", width=100, height=8, fg_color="blue",
                                           command=self.ekran_podsumowania)    
         
         przycisk_koszyka.pack(side="bottom", pady=20)
@@ -89,28 +89,28 @@ class KonfiguratorPC:
     def ekran_producentow(self, kategoria):
         self.wyczysc_okno()
         
-        self.logointel = customtkinter.CTkImage(Image.open("icons/intel.png"), size=(20, 20))
-        self.logoamd = customtkinter.CTkImage(Image.open("icons/amd.png"), size=(20,20))
-        self.logomsi = customtkinter.CTkImage(Image.open("icons/msi.png"), size=(20, 20))
-        self.logoasus = customtkinter.CTkImage(Image.open("icons/asus.png"), size=(20, 20))
-        self.logogigabyte = customtkinter.CTkImage(Image.open("icons/gigabyte.jpg"), size=(20, 20))
-        self.logoasrock = customtkinter.CTkImage(Image.open("icons/asrock.png"), size=(20, 20))
-        self.logonvidia = customtkinter.CTkImage(Image.open("icons/nvidia.png"), size=(20, 20))
-        self.logoamd = customtkinter.CTkImage(Image.open("icons/amd.png"), size=(20, 20))
-        self.logosapphire = customtkinter.CTkImage(Image.open("icons/gpu.png"), size=(20,20))
-        self.logogainward = customtkinter.CTkImage(Image.open("icons/gpu.png"), size=(20, 20))
-        self.logokingston = customtkinter.CTkImage(Image.open("icons/kingston.png"), size=(20, 20))
-        self.logocorsair = customtkinter.CTkImage(Image.open("icons/corsair.jpg"), size=(20, 20))
-        self.logogskill = customtkinter.CTkImage(Image.open("icons/g.skill.jpg"), size=(20, 20))
-        self.logoadata = customtkinter.CTkImage(Image.open("icons/adata.png"), size=(20, 20))
-        self.logolexar = customtkinter.CTkImage(Image.open("icons/lexar.png"), size=(20, 20))
-        self.logosamsung = customtkinter.CTkImage(Image.open("icons/samsung.png"), size=(20, 20))
-        self.logowesterndigital = customtkinter.CTkImage(Image.open("icons/westerndigital.png"), size=(20, 20))
-        self.logoendorfy = customtkinter.CTkImage(Image.open("icons/endorfy.jpg"), size=(20, 20))
-        self.logobequiet = customtkinter.CTkImage(Image.open("icons/bequiet.jpeg"), size=(20,20))
-        self.logonzhxt = customtkinter.CTkImage(Image.open("icons/nzxt.jpg"), size=(20, 20))
-        self.logolianli = customtkinter.CTkImage(Image.open("icons/lianli.jpg"), size=(20, 20))
-        self.logofractaldesign = customtkinter.CTkImage(Image.open("icons/fractaldesign.jpg"), size=(20, 20))
+        self.logointel = customtkinter.CTkImage(Image.open("icons/intel.png"), size=(42, 42))
+        self.logoamd = customtkinter.CTkImage(Image.open("icons/amd.png"), size=(42, 42))
+        self.logomsi = customtkinter.CTkImage(Image.open("icons/msi.png"), size=(42, 42))
+        self.logoasus = customtkinter.CTkImage(Image.open("icons/asus.png"), size=(42, 42))
+        self.logogigabyte = customtkinter.CTkImage(Image.open("icons/gigabyte.jpg"), size=(42, 42))
+        self.logoasrock = customtkinter.CTkImage(Image.open("icons/asrock.png"), size=(42, 42))
+        self.logonvidia = customtkinter.CTkImage(Image.open("icons/nvidia.png"), size=(42, 42))
+        self.logoamd = customtkinter.CTkImage(Image.open("icons/amd.png"), size=(42, 42))
+        self.logosapphire = customtkinter.CTkImage(Image.open("icons/gpu.png"), size=(42,42))
+        self.logogainward = customtkinter.CTkImage(Image.open("icons/gpu.png"), size=(42, 42))
+        self.logokingston = customtkinter.CTkImage(Image.open("icons/kingston.png"), size=(42, 42))
+        self.logocorsair = customtkinter.CTkImage(Image.open("icons/corsair.jpg"), size=(42, 42))
+        self.logogskill = customtkinter.CTkImage(Image.open("icons/g.skill.jpg"), size=(42, 42))
+        self.logoadata = customtkinter.CTkImage(Image.open("icons/adata.png"), size=(42, 42))
+        self.logolexar = customtkinter.CTkImage(Image.open("icons/lexar.png"), size=(42, 42))
+        self.logosamsung = customtkinter.CTkImage(Image.open("icons/samsung.png"), size=(42, 42))
+        self.logowesterndigital = customtkinter.CTkImage(Image.open("icons/westerndigital.png"), size=(42, 42))
+        self.logoendorfy = customtkinter.CTkImage(Image.open("icons/endorfy.jpg"), size=(42, 42))
+        self.logobequiet = customtkinter.CTkImage(Image.open("icons/bequiet.jpeg"), size=(42, 42))
+        self.logonzhxt = customtkinter.CTkImage(Image.open("icons/nzxt.jpg"), size=(42, 42))
+        self.logolianli = customtkinter.CTkImage(Image.open("icons/lianli.jpg"), size=(42, 42))
+        self.logofractaldesign = customtkinter.CTkImage(Image.open("icons/fractaldesign.jpg"), size=(42, 42))
 
         customtkinter.CTkLabel(self.okno, text=f"Wybierz markę: {kategoria}", font=("Arial", 14)).pack(pady=20)
 
@@ -241,9 +241,14 @@ class KonfiguratorPC:
             c.setFillColorRGB(0.1, 0.1, 0.3)
             c.rect(0, 750, 600, 100, fill=1)
 
+            try:
+                c.drawImage("icons/logo.png", 10, 730, width=120, height=120, mask='auto')
+            except Exception as e:
+                print(f"Błąd logo: {e}")    
+
             c.setFillColorRGB(1, 1, 1)
             c.setFont("Helvetica", 24)
-            c.drawString(50, 790, "OFERTA KONFIGURACJI PC")
+            c.drawString(120, 790, "OFERTA KONFIGURACJI PC")
 
             c.setFont("Helvetica", 10)
             data_teraz = datetime.now().strftime("%d.%m.%Y %H:%M")
