@@ -1,4 +1,5 @@
-import tkinter 
+import tkinter as tk
+from tkinter import PhotoImage 
 from tkinter import messagebox
 from reportlab.pdfgen import canvas 
 import os
@@ -15,11 +16,19 @@ from bazakomponentow import czesci_pc
 class KonfiguratorPC(customtkinter.CTk):
     def __init__(self):
         super().__init__()
-        
         self.koszyk = {}
-        
         self.dane_czesci = czesci_pc
         
+        system = platform.system()
+        try:
+            if system == "Windows":
+                self.iconbitmap("icons/ikonka.ico")
+            else:
+                ikonka_img = tk.PhotoImage(file = "icons/ikonka.png")
+                self.iconphoto(False, ikonka_img)
+        except Exception as e:
+            print(f"Nie udało się załadować ikony {e}")            
+
         self.title("PC Order")
         self.geometry("500x600")
         customtkinter.set_appearance_mode("dark")
@@ -297,7 +306,7 @@ class KonfiguratorPC(customtkinter.CTk):
 
         customtkinter.CTkLabel(self, text=f"SUMA: {suma_calkowita} zł", font=("Arial", 18, "bold")).pack(pady=20)
         customtkinter.CTkButton(self, text="Wróć do menu", command=self.ekran_glowny).pack(pady=10)
-        customtkinter.CTkButton(self, text="Wygeneruj PDF", fg_color="#4CAF50", text_color="white", font=("Arial", 12, "bold"), width=25, height=2, command=self.generuj_pdf).pack(pady=10)
+        customtkinter.CTkButton(self, text="Wygeneruj PDF", fg_color="#4CAF50", text_color="white", font=("Arial", 20, "bold"), width=50, height=10, command=self.generuj_pdf).pack(pady=10)
 
     def generuj_pdf(self):
         pdfmetrics.registerFont(TTFont('Roboto-Regular', 'Roboto-Regular.ttf'))
