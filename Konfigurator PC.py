@@ -30,18 +30,29 @@ class KonfiguratorPC(customtkinter.CTk):
             print(f"Nie udało się załadować ikony {e}")            
 
         self.title("PC Order")
-        self.geometry("500x600")
+     #---Środkowanie ekranu---    
+        width = 500
+        height = 600
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+
+        x = int((screen_width / 2) - (width /2))
+        y = int((screen_height / 2) - (height / 2))
+
+        self.geometry(f"{width}x{height}+{x}+{y}")
+
         customtkinter.set_appearance_mode("dark")
         customtkinter.set_default_color_theme("blue")
 
         self.ekran_glowny()
 
             
-
+     #---funkcja czyszczenia okna---
     def wyczysc_okno(self):
         for widget in self.winfo_children():
             widget.destroy()
-
+     
+     # ---funkcja ekranu głównego---
     def ekran_glowny(self):
         self.wyczysc_okno()
 
@@ -105,7 +116,8 @@ class KonfiguratorPC(customtkinter.CTk):
             self, text="Ustawienia", command=self.ekran_ustawien, fg_color="#4A4A4A"
         )
         self.btn_ustawienia.pack(pady=10)
-
+     
+     #---funkcja odpowiadająca za wybór producentów---
     def ekran_producentow(self, kategoria):
         self.wyczysc_okno()
         
@@ -176,7 +188,8 @@ class KonfiguratorPC(customtkinter.CTk):
             przycisk.pack(pady=10)
             
         customtkinter.CTkButton(self, text="Powrót", command=self.ekran_glowny).pack(pady=20)    
-
+     
+     #---funkcja odpowiadająca za wobór modelu podzespołu--- 
     def ekran_modeli(self, kategoria, grupa):
         self.aktualna_grupa = grupa
         self.wyczysc_okno()
@@ -201,7 +214,8 @@ class KonfiguratorPC(customtkinter.CTk):
 
         przycisk_powrot = customtkinter.CTkButton(self, text="Cofnij", command=lambda k=kategoria : self.ekran_producentow(k))
         przycisk_powrot.pack(pady=20) 
-
+     
+     #---funkcja odpowiadająca za dodanie jednej sztuki do koszyka w ekranie modeli---
     def dodaj_do_koszyka(self, kategoria, dane_produktu, grupa):
         nazwa = dane_produktu['nazwa']
         if nazwa in self.koszyk:
@@ -215,7 +229,8 @@ class KonfiguratorPC(customtkinter.CTk):
             }    
 
         self.ekran_modeli(kategoria, grupa) 
-
+     
+     #---funkcja odpowiadająca za usuniecie jednej sztuki w ekranie wyboru modeli---
     def usun_jedna_sztuke(self, nazwa_produktu, kategoria, grupa):
         if nazwa_produktu in self.koszyk:
             self.koszyk[nazwa_produktu]['ilosc'] -= 1
@@ -223,11 +238,13 @@ class KonfiguratorPC(customtkinter.CTk):
                 del self.koszyk[nazwa_produktu]
         self.ekran_modeli(kategoria, grupa)               
 
+     #---funkcja odpowiadająca za usuwanie rzeczy w koszyku--- 
     def usun_z_koszyka_calkowicie(self, nazwa_produktu):
         if nazwa_produktu in self.koszyk:
             del self.koszyk[nazwa_produktu]
         self.ekran_podsumowania() 
 
+     #---funkcja odpowiadająca za ekran ustawień---
     def ekran_ustawien(self):
         self.wyczysc_okno()
 
@@ -251,7 +268,8 @@ class KonfiguratorPC(customtkinter.CTk):
 
         customtkinter.CTkButton(self, text="Zapisz w bazie danych", command=self.dodaj_czesc).pack(pady=15)
         customtkinter.CTkButton(self, text="Wróć", command=self.ekran_glowny, fg_color="transparent", border_width=1).pack()
-
+     
+     #---funkcja odpowiadająca za zapisywanie dodanych podzespołów w bazie danych---
     def zapisz_do_bazy_py(self):
         try:
             with open("bazakomponentow.py", "w", encoding= "utf-8") as f:
@@ -259,7 +277,8 @@ class KonfiguratorPC(customtkinter.CTk):
             print("Pomyślnie zapisano do pliku")    
         except Exception as e:
             messagebox.showerror("Błąd zapisu", f"Nie udało się zapisać{e}") 
-            
+     
+     #---funkcja odpowiadająca za tworzenie własnych podzespołów---        
     def dodaj_czesc(self):
         kat = self.wybrana_kat.get()
         marka = self.entry_marka.get().strip()
@@ -283,7 +302,7 @@ class KonfiguratorPC(customtkinter.CTk):
                 messagebox.showerror("Błąd", "Cena musi być liczbą całkowitą!")
         else:
             messagebox.showwarning("Pole puste", "Proszę wypełnić wszystkie pola.")                               
-
+     #---funkcja odpowiadająca za ekran koszyka--- 
     def ekran_podsumowania(self):
         self.wyczysc_okno()
         customtkinter.CTkLabel(self, text="Twoja Konfiguracja", font=("Arial", 18, "bold")).pack(pady=20)
@@ -307,7 +326,7 @@ class KonfiguratorPC(customtkinter.CTk):
         customtkinter.CTkLabel(self, text=f"SUMA: {suma_calkowita} zł", font=("Arial", 18, "bold")).pack(pady=20)
         customtkinter.CTkButton(self, text="Wróć do menu", command=self.ekran_glowny).pack(pady=10)
         customtkinter.CTkButton(self, text="Wygeneruj PDF", fg_color="#4CAF50", text_color="white", font=("Arial", 20, "bold"), width=50, height=10, command=self.generuj_pdf).pack(pady=10)
-
+     #---funkcja odpowiadająca za generowanie PDF---
     def generuj_pdf(self):
         pdfmetrics.registerFont(TTFont('Roboto-Regular', 'Roboto-Regular.ttf'))
 
