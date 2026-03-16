@@ -10,6 +10,7 @@ from PIL import Image
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from bazakomponentow import czesci_pc
+ 
 
 class KonfiguratorPC(customtkinter.CTk):
     def __init__(self):
@@ -26,7 +27,7 @@ class KonfiguratorPC(customtkinter.CTk):
 
         self.ekran_glowny()
 
-        
+            
 
     def wyczysc_okno(self):
         for widget in self.winfo_children():
@@ -86,7 +87,7 @@ class KonfiguratorPC(customtkinter.CTk):
 
             przycisk.grid(row=i // 2, column = i % 2, padx=15, pady=15)
 
-        przycisk_koszyka = customtkinter.CTkButton(self, text="Finalizacja zakupy", width=100, height=8, fg_color="blue",
+        przycisk_koszyka = customtkinter.CTkButton(self, text="Finalizacja zakupu", width=100, height=8, fg_color="blue",
                                           command=self.ekran_podsumowania)    
         
         przycisk_koszyka.pack(side="bottom", pady=20)
@@ -242,6 +243,14 @@ class KonfiguratorPC(customtkinter.CTk):
         customtkinter.CTkButton(self, text="Zapisz w bazie danych", command=self.dodaj_czesc).pack(pady=15)
         customtkinter.CTkButton(self, text="Wróć", command=self.ekran_glowny, fg_color="transparent", border_width=1).pack()
 
+    def zapisz_do_bazy_py(self):
+        try:
+            with open("bazakomponentow.py", "w", encoding= "utf-8") as f:
+               f.write(f"czesci_pc = {self.dane_czesci}")
+            print("Pomyślnie zapisano do pliku")    
+        except Exception as e:
+            messagebox.showerror("Błąd zapisu", f"Nie udało się zapisać{e}") 
+            
     def dodaj_czesc(self):
         kat = self.wybrana_kat.get()
         marka = self.entry_marka.get().strip()
@@ -256,8 +265,9 @@ class KonfiguratorPC(customtkinter.CTk):
                     self.dane_czesci[kat][marka] = []
 
                 self.dane_czesci[kat][marka].append({"nazwa": nazwa, "cena": cena_int})
+                self.zapisz_do_bazy_py()
 
-                messagebox.showinfo("Sukces", f"Dodano {nazwa} do katgorii {kat}")
+                messagebox.showinfo("Sukces", f"Dodano {nazwa} do kategorii {kat}")
                 self.ekran_ustawien()
 
             except ValueError:
