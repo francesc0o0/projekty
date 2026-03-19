@@ -107,7 +107,7 @@ class KonfiguratorPC(customtkinter.CTk):
 
             przycisk.grid(row=i // 2, column = i % 2, padx=15, pady=15)
 
-        przycisk_koszyka = customtkinter.CTkButton(self, text="Finalizacja zakupu", width=100, height=8, fg_color="blue",
+        przycisk_koszyka = customtkinter.CTkButton(self, text="Finalizacja zakupu", font=("Arial", 16), width=100, height=8, fg_color="blue",
                                           command=self.ekran_podsumowania)    
         
         przycisk_koszyka.pack(side="bottom", pady=20)
@@ -129,8 +129,8 @@ class KonfiguratorPC(customtkinter.CTk):
         self.logoasrock = customtkinter.CTkImage(Image.open("icons/asrock.png"), size=(42, 42))
         self.logonvidia = customtkinter.CTkImage(Image.open("icons/nvidia.png"), size=(42, 42))
         self.logoamd = customtkinter.CTkImage(Image.open("icons/amd.png"), size=(42, 42))
-        self.logosapphire = customtkinter.CTkImage(Image.open("icons/gpu.png"), size=(42,42))
-        self.logogainward = customtkinter.CTkImage(Image.open("icons/gpu.png"), size=(42, 42))
+        self.logosapphire = customtkinter.CTkImage(Image.open("icons/sapphire.png"), size=(42,42))
+        self.logogainward = customtkinter.CTkImage(Image.open("icons/gainward.png"), size=(42, 42))
         self.logokingston = customtkinter.CTkImage(Image.open("icons/kingston.png"), size=(42, 42))
         self.logocorsair = customtkinter.CTkImage(Image.open("icons/corsair.jpg"), size=(42, 42))
         self.logogskill = customtkinter.CTkImage(Image.open("icons/g.skill.jpg"), size=(42, 42))
@@ -143,6 +143,9 @@ class KonfiguratorPC(customtkinter.CTk):
         self.logonzhxt = customtkinter.CTkImage(Image.open("icons/nzxt.jpg"), size=(42, 42))
         self.logolianli = customtkinter.CTkImage(Image.open("icons/lianli.jpg"), size=(42, 42))
         self.logofractaldesign = customtkinter.CTkImage(Image.open("icons/fractaldesign.jpg"), size=(42, 42))
+        self.logowater = customtkinter.CTkImage(Image.open("icons/water.png"), size =(42, 42))
+        self.logoair = customtkinter.CTkImage(Image.open("icons/air.png"), size=(42, 42))
+        
 
         customtkinter.CTkLabel(self, text=f"Wybierz markę: {kategoria}", font=("Arial", 14)).pack(pady=20)
 
@@ -169,7 +172,10 @@ class KonfiguratorPC(customtkinter.CTk):
             "be quiet": self.logobequiet,
             "NZHXT": self.logonzhxt,
             "Lian Li": self.logolianli,
-            "Fractal Design": self.logofractaldesign
+            "Fractal Design": self.logofractaldesign,
+            "Powietrzne": self.logoair,
+            "Wodne (AIO)": self.logowater,
+            
         }
 
         for m in marki:
